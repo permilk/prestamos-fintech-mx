@@ -2,13 +2,14 @@
 
 import * as React from 'react';
 import { Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ArrowLeft, Save, DollarSign, CreditCard, Building, QrCode, Receipt, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { cn, formatCurrency } from '@/lib/utils';
+import { SearchParamsReader } from './search-params-reader';
 
 // Mock loan data
 const prestamosMock = [
@@ -26,23 +27,10 @@ const metodosPago = [
     { id: 'tarjeta', label: 'Tarjeta', icon: CreditCard, color: 'bg-indigo-500' },
 ];
 
-// Loading component for Suspense
-function LoadingFallback() {
-    return (
-        <div className="flex items-center justify-center min-h-[400px]">
-            <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
-        </div>
-    );
-}
-
-// Main content component
-function NuevoPagoContent() {
+export default function NuevoPagoPage() {
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const prestamoIdParam = searchParams.get('prestamo');
-
     const [loading, setLoading] = React.useState(false);
-    const [prestamoId, setPrestamoId] = React.useState(prestamoIdParam || '');
+    const [prestamoId, setPrestamoId] = React.useState('');
     const [monto, setMonto] = React.useState<number>(0);
     const [metodoPago, setMetodoPago] = React.useState('efectivo');
     const [referencia, setReferencia] = React.useState('');
@@ -66,8 +54,19 @@ function NuevoPagoContent() {
         router.push('/pagos');
     };
 
+    const handlePrestamoIdFromParams = React.useCallback((id: string | null) => {
+        if (id && !prestamoId) {
+            setPrestamoId(id);
+        }
+    }, [prestamoId]);
+
     return (
         <div className="space-y-6 animate-fade-in max-w-3xl mx-auto">
+            {/* Search Params Reader wrapped in Suspense */}
+            <Suspense fallback={null}>
+                <SearchParamsReader onPrestamoId={handlePrestamoIdFromParams} />
+            </Suspense>
+
             {/* Page Header */}
             <div className="flex items-center gap-4">
                 <Link href="/pagos">
@@ -323,14 +322,5 @@ function NuevoPagoContent() {
                 </div>
             </form>
         </div>
-    );
-}
-
-// Wrapper with Suspense for useSearchParams
-export default function NuevoPagoPage() {
-    return (
-        <Suspense fallback={<LoadingFallback />}>
-            <NuevoPagoContent />
-        </Suspense>
     );
 }
