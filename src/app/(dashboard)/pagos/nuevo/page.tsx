@@ -11,6 +11,9 @@ import Link from 'next/link';
 import { cn, formatCurrency } from '@/lib/utils';
 import { SearchParamsReader } from './search-params-reader';
 
+// Force dynamic rendering to avoid prerender errors with useSearchParams
+export const dynamic = 'force-dynamic';
+
 // Mock loan data
 const prestamosMock = [
     { id: '1', cliente: 'Juan Pérez García', saldoPendiente: 18000, cuotaMensual: 1500 },
