@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,12 +26,10 @@ const clientesMock = [
 
 export default function NuevoPrestamoPage() {
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const clienteIdParam = searchParams.get('cliente');
 
     const [loading, setLoading] = React.useState(false);
     const [formData, setFormData] = React.useState({
-        clienteId: clienteIdParam || '',
+        clienteId: '',
         monto: 10000,
         tasaInteres: 20,
         plazo: 12,
