@@ -1,11 +1,12 @@
 'use client';
 
 import * as React from 'react';
+import { Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowLeft, Save, DollarSign, CreditCard, Building, QrCode, Receipt } from 'lucide-react';
+import { ArrowLeft, Save, DollarSign, CreditCard, Building, QrCode, Receipt, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { cn, formatCurrency } from '@/lib/utils';
 
@@ -25,7 +26,17 @@ const metodosPago = [
     { id: 'tarjeta', label: 'Tarjeta', icon: CreditCard, color: 'bg-indigo-500' },
 ];
 
-export default function NuevoPagoPage() {
+// Loading component for Suspense
+function LoadingFallback() {
+    return (
+        <div className="flex items-center justify-center min-h-[400px]">
+            <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
+        </div>
+    );
+}
+
+// Main content component
+function NuevoPagoContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const prestamoIdParam = searchParams.get('prestamo');
@@ -312,5 +323,14 @@ export default function NuevoPagoPage() {
                 </div>
             </form>
         </div>
+    );
+}
+
+// Wrapper with Suspense for useSearchParams
+export default function NuevoPagoPage() {
+    return (
+        <Suspense fallback={<LoadingFallback />}>
+            <NuevoPagoContent />
+        </Suspense>
     );
 }
